@@ -8,6 +8,7 @@ if __name__ == '__main__':
 	print("     Model Vector ")
 	print("--------------------\n\n")
 	aux = PreProcessing()
-	allwords = aux.readDocuments()
-	print(allwords)
+	aux.readDocuments()
+	#allwords = aux.readAndSaveDocsSeparate()
+	#print(allwords)
    
