@@ -9,8 +9,9 @@ PATH = "/home/katiely/Documents/RiI/TP1_VectorModel/cfc/docs/"
 class PreProcessing():
 	def __init__(self):
 		listaDocs = []
-		pass
 		
+	
+
 	def readAndSaveDocsSeparate(self,docsPath = PATH):
 		numberOfDocs = 0
 		listaDocs = []
@@ -46,7 +47,7 @@ class PreProcessing():
 				raise e 
 			
 
-		print("->Read all documents ....")
+		print("->Creating all documents ....")
 		#print("->Amount of Words: "+ str(len(allWords)))
 		#print("->Amount of docs: " + str(numberOfDocs-5))
 		
