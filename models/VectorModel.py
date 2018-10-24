@@ -84,13 +84,13 @@ class VectorModel(object):
 		v_Q = {}
 		v_Q['Q'] = np.zeros(len(self.vocabulary))
 		freq = {}
-		for x in query:
+		for x in range(0,len(query)):
 			if x in freq:
 				freq[x] += 1
 			else:
 				freq[x] = 1
 
-		for w in self.query:
+		for w in range(0,len(query)):
 			w_d = self.idf(w) * freq.get(w, 0)
 			position = self.vocabulary.index(w)
 			v_Q['Q'][position] = w_d
