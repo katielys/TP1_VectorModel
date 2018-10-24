@@ -1,5 +1,3 @@
-PATH_DOCS_SPLITED = "/home/katiely/Documents/RiI/TP1_VectorModel/cfc/separate"
-PATH_DOCS = "/home/katiely/Documents/RiI/TP1_VectorModel/cfc/separate/*.txt"
 import os
 import glob
 import numpy as np
@@ -7,11 +5,13 @@ from collections import Counter
 
 class VectorModel(object):
 
-	def __init__(self):
+	def __init__(self,pathDocs = "/home/katiely/Documents/RiI/TP1_VectorModel/cfc/separate/*.txt"):
 		self.totalOfDocs = 0
 		self.invIndex = []
+		self.pathDocs = pathDocs
 
-	def parseDocs(self,PATH = PATH_DOCS):
+	def parseDocs(self):
+		PATH = self.pathDocs
 		print("->Lendo Arquivos.............")
 		texts, words = {}, set()
 		#print(glob.glob(PATH))
