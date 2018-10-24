@@ -80,5 +80,22 @@ class VectorModel(object):
 			norms[doc] = np.linalg.norm(self.vetorsDocument[doc])
 		self.norms = norms
 		print("->finalizando calculo..................")
+	def calculateQueryVectors(self,query):
+		v_Q = {}
+		v_Q['Q'] = np.zeros(len(self.vocabulary))
+		freq = {}
+		for x in query:
+			if x in freq:
+				freq[x] += 1
+			else:
+				freq[x] = 1
+
+		for w in self.query:
+			w_d = self.idf(w) * freq.get(w, 0)
+			position = self.vocabulary.index(w)
+			v_Q['Q'][position] = w_d
+		return v_Q
+
+
 
 			
