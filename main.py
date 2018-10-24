@@ -28,8 +28,11 @@ if __name__ == '__main__':
 	print("\n\n--------------------")
 	print("     Model Vector ")
 	print("--------------------\n\n")
+<<<<<<< HEAD
 
 	print("Testando salvar as paradas")
+=======
+>>>>>>> master
 	
 	aux = VectorModel()
 	aux.parseDocs()
