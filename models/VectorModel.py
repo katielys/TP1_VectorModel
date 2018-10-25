@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
 import os
 import glob
 import numpy as np
 from pprint import pprint
 from collections import Counter
+from operator import itemgetter
+
 
 class VectorModel(object):
 
@@ -13,6 +16,8 @@ class VectorModel(object):
 		self.vocabulary = []
 		self.documents = {} #dict = (documento,palavras)
 		self.invIndex = {} # Dict de Dict -> 
+		self.norms = {}
+		self.vetorsDocument = {} #Vetores de cada doc
 
 	def removerRuido(self,txt):
 		txt = txt.strip()
@@ -106,21 +111,64 @@ class VectorModel(object):
 		self.norms = norms
 		print("->finalizando calculo..................")
 
-	def calculateQueryVectors(self,query):
+	def calculateQueryVector(self,query):
 		v_Q = {}
 		v_Q = np.zeros(len(self.vocabulary))
 
 		freq_q = Counter()
+		query_words = query.split()
 
-		for x in range(0,len(query)):
-			freq_q[query[x]] += 1
+		for x in range(0,len(query_words)):
+			freq_q[query_words[x]] += 1
 			
-		for w in range(0,len(query)):
-			if(query[w] in self.vocabulary):
-				w_d = self.idf(query[w]) * freq_q[query[w]]
-				position = self.vocabulary.index(query[w])
+		for w in range(0,len(query_words)):
+			if(query_words[w] in self.vocabulary):
+
+				w_d = self.idf(query_words[w]) * freq_q[query_words[w]]
+				position = self.vocabulary.index(query_words[w])
 				v_Q[position] = w_d
+
 		return v_Q
+
+	def calculateSimilarity(self,doc,query,vector_query,norm_query):
+
+		sum_q = 0.0
+		sum_norms = self.norms[doc] * norm_query
+
+		for i in range(0,len(self.vocabulary)):
+			sum_q += self.vetorsDocument[doc][i] * vector_query[i]
+
+		similarity = sum_q/sum_norms
+
+		return similarity
+
+	def ranking_k(self,query,k=10):
+		print("->Calculando Rank de cada documento..............")
+
+		documents_rank = {} # Key = doc number | Value = similarity
+		tuple_documents = []
+		top_k = []
+
+		vector_query = self.calculateQueryVector(query)
+		norm_query = np.linalg.norm(vector_query)
+
+		for doc in self.documents.keys():
+			documents_rank[doc] = self.calculateSimilarity(doc,query,vector_query,norm_query)
+
+		for doc, sim in documents_rank.items():
+			tuple_documents.append((doc,sim))
+
+		tuple_documents.sort(key=lambda x: x[1],reverse = True)
+
+		for i in range(0,k):
+			top_k.append(tuple_documents[i][0])
+
+		print("->finalizando calculo..................")
+		return top_k
+
+
+
+
 
 
 
