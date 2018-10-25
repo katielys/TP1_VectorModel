@@ -8,8 +8,7 @@ from models.PreProcessing import PreProcessing
 from models.Metrics import Metrics
 from pprint import pprint
 
-PATH_DOCS = "/home/katiely/Documents/RiI/TP1_VectorModel/cfc/cfquery"
-def readQueries(PATH_DOCS = "/home/katiely/Documents/RiI/TP1_VectorModel/cfc/cfquery"):
+def readQueries(PATH_DOCS = "cfc/cfquery"):
 
 	print("lendo arquivo de consultas.....")
 	queries = []
@@ -47,25 +46,24 @@ if __name__ == '__main__':
 	print("     Model Vector ")
 	print("--------------------\n\n")
 	
-	# vm = VectorModel("cfc/separate/*.txt")
-	vmp = VectorModelPlus("cfc/separate/*.txt")
-	precision = 0.000000000000000
-	queries = readQueries(PATH_DOCS)
+	# aux = VectorModel("cfc/separate/*.txt")
+	aux = VectorModelPlus("cfc/separate/*.txt")
+	
+	queries = readQueries()
 
 	for i in range(0,len(queries)):
 
 		r_querie = [int(x) for x, y in queries[i][3]]
 		# print("Querie Number: " + queries[i][0])
 		# print("Number Relevants: " + queries[i][2])
-		rank_vetorial = vmp.ranking_k(queries[i][1],7) #Vai calcular o top 10 similares -> passa título querie como parametro
+		rank_vetorial = aux.ranking_k(queries[i][1],len(r_querie)) #Vai calcular o top 10 similares -> passa título querie como parametro
 
 		metrics = Metrics(r_querie,rank_vetorial)
 
-		precision = precision+(metrics.precisao()) 
-		print("Precisão: %9.5f" %(metrics.precisao()))
+		print("Precisão: " + str(metrics.precisao()))
 		print("Revocação: " + str(metrics.revocacao()))
 		print("F-Measure: " + str(metrics.f1()))
-	print("MAP: %5.f" % (precision/len(queries)))
+		print("MAP: " + str(metrics.MAP()))
 
 
 

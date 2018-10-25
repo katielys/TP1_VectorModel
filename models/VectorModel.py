@@ -21,6 +21,11 @@ class VectorModel(object):
 		self.norms = {}
 		self.vetorsDocument = {} #Vetores de cada doc
 
+		self.parseDocs()
+		self.buildInvList()
+		self.calculateDocumentsVectors()
+		self.calculateNormEachDoc() 
+
 	def removerRuido(self,txt):
 		txt = txt.strip()
 		txt = txt.strip('\n')
