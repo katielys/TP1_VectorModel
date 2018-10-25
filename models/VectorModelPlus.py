@@ -3,11 +3,11 @@ import os
 import glob
 import numpy as np
 import nltk
-
 from pprint import pprint
 from collections import Counter
 from operator import itemgetter
 from nltk.tokenize import word_tokenize
+from unicodedata import normalize
 
 stemmer = nltk.stem.SnowballStemmer('english')
 
@@ -15,7 +15,6 @@ class VectorModelPlus(object):
 
 	def __init__(self,pathDocs = "/home/katiely/Documents/RiI/TP1_VectorModel/cfc/separate/*.txt"):
 		self.totalOfDocs = 0
-		self.invIndex = []
 		self.pathDocs = pathDocs
 		self.vocabulary = []
 		self.documents = {} #dict = (documento,palavras)
@@ -41,8 +40,9 @@ class VectorModelPlus(object):
 
 	def preProcessamento(self,word):
 
-		if (self.hasNumbers(word) == False):return None
-		
+		if (self.hasNumbers(word) == True):return None
+
+		word = normalize('NFKD', word).encode('ASCII', 'ignore').decode('ASCII')
 		word = word.lower()                          
 		word = stemmer.stem(word)
 
@@ -75,7 +75,7 @@ class VectorModelPlus(object):
 				texts[docs] = txt_doc
 
 		self.documents = texts
-		self.vocabulary = sorted(list(words)) 
+		self.vocabulary = sorted(list(words))
 		print("->Tamanho total do vocabulario: "+ str(len(self.vocabulary)))
 		print("->total docs: "+ str(len(self.documents)))
 
@@ -134,7 +134,7 @@ class VectorModelPlus(object):
 	def calculateNormEachDoc(self):
 		print("->Calculando norma de cada documento..............")
 		norms = {}
-		for doc in self.documents:
+		for doc in self.documents.keys():
 			norms[doc] = np.linalg.norm(self.vetorsDocument[doc])
 		self.norms = norms
 		print("->finalizando calculo..................")
@@ -143,11 +143,8 @@ class VectorModelPlus(object):
 		v_Q = {}
 		v_Q = np.zeros(len(self.vocabulary))
 
-		freq_q = Counter()
 		query_words = query.split()
-
-		for x in range(0,len(query_words)):
-			freq_q[query_words[x]] += 1
+		freq_q = Counter(query_words)
 			
 		for w in range(0,len(query_words)):
 			if(query_words[w] in self.vocabulary):
@@ -158,15 +155,23 @@ class VectorModelPlus(object):
 
 		return v_Q
 
-	def calculateSimilarity(self,doc,query,vector_query,norm_query):
+	def calculatePartialSim(self, query, v_q):
+		accu = {}
 
-		sum_q = 0.0
-		sum_norms = self.norms[doc] * norm_query
+		for doc in self.documents:
+			accu[doc] = 0.0
 
-		for i in range(0,len(self.vocabulary)):
-			sum_q += self.vetorsDocument[doc][i] * vector_query[i]
+		for word in query.split():
+			if word in self.vocabulary:
+				innv = self.invIndex[word]
+				for doc, tf in innv.items():
+					accu[doc] = np.inner(self.vetorsDocument[doc], v_q)
 
-		similarity = sum_q/sum_norms
+		return accu
+
+	def calculateSimilarity(self,doc,accu):
+
+		similarity = accu[doc] / (self.norms[doc])
 
 		return similarity
 
@@ -176,7 +181,7 @@ class VectorModelPlus(object):
 		for sub_word in query.split():
 			sub_word = self.preProcessamento(sub_word)
 			if (sub_word != None):
-				nova_consulta += sub_word + ""
+				nova_consulta += sub_word + " "
 		return nova_consulta
 
 	def ranking_k(self,query,k=10):
@@ -187,12 +192,15 @@ class VectorModelPlus(object):
 		tuple_documents = []
 		top_k = []
 
+
 		query = self.reformularQuery(query)
 		vector_query = self.calculateQueryVector(query)
+
+		accu = self.calculatePartialSim(query,vector_query)
 		norm_query = np.linalg.norm(vector_query)
 
 		for doc in self.documents.keys():
-			documents_rank[doc] = self.calculateSimilarity(doc,query,vector_query,norm_query)
+			documents_rank[doc] = self.calculateSimilarity(doc,accu)
 
 		for doc, sim in documents_rank.items():
 			tuple_documents.append((doc,sim))
@@ -211,4 +219,3 @@ class VectorModelPlus(object):
 
 
 
-			
