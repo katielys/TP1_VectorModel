@@ -11,7 +11,7 @@ class VectorModel(object):
 		self.invIndex = []
 		self.pathDocs = pathDocs
 		self.vocabulary = []
-		self.documents = [] #Lista de dicionarios -> dict = (documento,palavras)
+		self.documents = {} #dict = (documento,palavras)
 		self.invIndex = {} # Dict de Dict -> 
 
 	def removerRuido(self,txt):
@@ -61,8 +61,8 @@ class VectorModel(object):
 
 
 		self.invIndex = dictWords
-		pprint(dict(self.invIndex))
-		input("\nClique <ENTER> para prosseguir")
+		# pprint(dict(self.invIndex))
+		# input("\nClique <ENTER> para prosseguir")
 
 		print("->Finalizacao da criacao do indice.....")
 
@@ -93,8 +93,8 @@ class VectorModel(object):
 			for i, w in enumerate(self.vocabulary):
 
 				w_d = self.idf(w) * self.tf(doc, w)
-				if (w_d > 0.0):
-					vetors[doc][i] = w_d
+				
+				vetors[doc][i] = w_d
 		self.vetorsDocument = vetors	
 		print("->acabou calculo da norma docs")		
 
@@ -108,18 +108,18 @@ class VectorModel(object):
 
 	def calculateQueryVectors(self,query):
 		v_Q = {}
-		v_Q['Q'] = np.zeros(len(self.vocabulary))
-		freq = {}
-		for x in range(0,len(query)):
-			if x in freq:
-				freq[x] += 1
-			else:
-				freq[x] = 1
+		v_Q = np.zeros(len(self.vocabulary))
 
+		freq_q = Counter()
+
+		for x in range(0,len(query)):
+			freq_q[query[x]] += 1
+			
 		for w in range(0,len(query)):
-			w_d = self.idf(w) * freq.get(w, 0)
-			position = self.vocabulary.index(w)
-			v_Q['Q'][position] = w_d
+			if(query[w] in self.vocabulary):
+				w_d = self.idf(query[w]) * freq_q[query[w]]
+				position = self.vocabulary.index(query[w])
+				v_Q[position] = w_d
 		return v_Q
 
 
