@@ -8,6 +8,7 @@ from models.PreProcessing import PreProcessing
 from models.Metrics import Metrics
 from pprint import pprint
 
+PATH_DOCS = "/home/katiely/Documents/RiI/TP1_VectorModel/cfc/cfquery"
 def readQueries(PATH_DOCS = "/home/katiely/Documents/RiI/TP1_VectorModel/cfc/cfquery"):
 
 	print("lendo arquivo de consultas.....")
