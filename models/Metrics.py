@@ -2,7 +2,7 @@
 import numpy as np
 
 class Metrics(object):
-	"""docstring for ClassName"""
+	"""docstring for Metics"""
 	def __init__(self,N,R):
 
 		self.N = N # Solução

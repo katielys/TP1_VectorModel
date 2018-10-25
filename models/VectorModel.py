@@ -5,7 +5,7 @@ import numpy as np
 from pprint import pprint
 from collections import Counter
 from operator import itemgetter
-
+from scipy import spatial
 
 class VectorModel(object):
 
@@ -18,11 +18,6 @@ class VectorModel(object):
 		self.invIndex = {} # Dict de Dict -> 
 		self.norms = {}
 		self.vetorsDocument = {} #Vetores de cada doc
-
-		self.parseDocs()
-		self.buildInvList()
-		self.calculateDocumentsVectors()
-		self.calculateNormEachDoc() 
 
 	def removerRuido(self,txt):
 		txt = txt.strip()
@@ -98,13 +93,17 @@ class VectorModel(object):
 		vetors = {}
 		total = len(self.documents)
 		atual = 0.0
+		el = 0
 		for doc in self.documents.keys():
+			print('{:.2f}'.format((el*100)/len(self.documents)), end="\r")
 			vetors[doc] = np.zeros(len(self.vocabulary))
 			for i, w in enumerate(self.vocabulary):
-
-				w_d = self.idf(w) * self.tf(doc, w)
+				thisTF = self.tf(doc, w) 
+				if(thisTF != 0):
+					w_d = self.idf(w) * thisTF
 				
-				vetors[doc][i] = w_d
+					vetors[doc][i] = w_d
+			el += 1
 		self.vetorsDocument = vetors	
 		print("->acabou calculo da norma docs")		
 
@@ -136,21 +135,11 @@ class VectorModel(object):
 		return v_Q
 
 	def calculateSimilarity(self,doc,query,vector_query,norm_query):
-
-		sum_q = 0.0
-		sum_norms = self.norms[doc] * norm_query
-
-		for i in range(0,len(self.vocabulary)):
-			sum_q += self.vetorsDocument[doc][i] * vector_query[i]
-
-		similarity = sum_q/sum_norms
-
-		return similarity
+		return 1 - spatial.distance.cosine(doc, vector_query)
 
 	def ranking_k(self,query,k=10):
-		print("->Calculando Rank de cada documento..............")
-		if (k > len(self.documents)):
-			k = 10
+		print("->Calculando Rank de cada documento..............", query)
+
 		documents_rank = {} # Key = doc number | Value = similarity
 		tuple_documents = []
 		top_k = []
@@ -159,17 +148,18 @@ class VectorModel(object):
 		norm_query = np.linalg.norm(vector_query)
 
 		for doc in self.documents.keys():
-			documents_rank[doc] = self.calculateSimilarity(doc,query,vector_query,norm_query)
+			documents_rank[doc] = abs(self.calculateSimilarity(doc,query,vector_query,norm_query))
 
 		for doc, sim in documents_rank.items():
 			tuple_documents.append((doc,sim))
 
-		tuple_documents.sort(key=lambda x: x[1],reverse = True)
+		tuple_documents.sort(key=lambda x: x[1],reverse = False)
 
 		for i in range(0,k):
 			top_k.append(tuple_documents[i][0])
+			#print(tuple_documents[i][0], tuple_documents[i][1])
 
-		print("->finalizando calculo..................")
+		print("->finalizando calculo..................", top_k)
 		return top_k
 
 

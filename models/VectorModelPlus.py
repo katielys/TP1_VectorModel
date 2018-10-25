@@ -160,14 +160,17 @@ class VectorModelPlus(object):
 
 	def calculateSimilarity(self,doc,query,vector_query,norm_query):
 
-		sum_q = 0.0
+		sum_q = 0.000000
+		#print("norm -> %6.7f " % self.norms[doc])
+		#print("norm_query -> %6.7f " %norm_query)
 		sum_norms = self.norms[doc] * norm_query
+		#print ("sum_norms :%5.9f"%sum_norms)
 
 		for i in range(0,len(self.vocabulary)):
 			sum_q += self.vetorsDocument[doc][i] * vector_query[i]
-
-		similarity = sum_q/sum_norms
-
+		#print("sum_q %5.5f" % sum_q)
+		similarity = float(sum_q/float(sum_norms))
+		#print("similarity %5.5f"% similarity)
 		return similarity
 
 	def reformularQuery(self,query):
@@ -190,6 +193,7 @@ class VectorModelPlus(object):
 		query = self.reformularQuery(query)
 		vector_query = self.calculateQueryVector(query)
 		norm_query = np.linalg.norm(vector_query)
+		print("--->"+str(vector_query))
 
 		for doc in self.documents.keys():
 			documents_rank[doc] = self.calculateSimilarity(doc,query,vector_query,norm_query)
@@ -203,12 +207,4 @@ class VectorModelPlus(object):
 			top_k.append(tuple_documents[i][0])
 
 		print("->finalizando calculo..................")
-		return top_k
-
-
-
-
-
-
-
-			
+		return top_k			

@@ -49,7 +49,7 @@ if __name__ == '__main__':
 	
 	# vm = VectorModel("cfc/separate/*.txt")
 	vmp = VectorModelPlus("cfc/separate/*.txt")
-	
+	precision = 0.000000000000000
 	queries = readQueries(PATH_DOCS)
 
 	for i in range(0,len(queries)):
@@ -57,14 +57,15 @@ if __name__ == '__main__':
 		r_querie = [int(x) for x, y in queries[i][3]]
 		# print("Querie Number: " + queries[i][0])
 		# print("Number Relevants: " + queries[i][2])
-		rank_vetorial = vmp.ranking_k(queries[i][1],4) #Vai calcular o top 10 similares -> passa título querie como parametro
+		rank_vetorial = vmp.ranking_k(queries[i][1],7) #Vai calcular o top 10 similares -> passa título querie como parametro
 
 		metrics = Metrics(r_querie,rank_vetorial)
 
-		print("Precisão: " + str(metrics.precisao()))
+		precision = precision+(metrics.precisao()) 
+		print("Precisão: %9.5f" %(metrics.precisao()))
 		print("Revocação: " + str(metrics.revocacao()))
 		print("F-Measure: " + str(metrics.f1()))
-		print("MAP: " + str(metrics.MAP()))
+	print("MAP: %5.f" % (precision/len(queries)))
 
 
 
