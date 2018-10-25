@@ -2,12 +2,16 @@
 import os
 import glob
 import numpy as np
+import nltk
+
 from pprint import pprint
 from collections import Counter
 from operator import itemgetter
+from nltk.tokenize import word_tokenize
 
+stemmer = nltk.stem.SnowballStemmer('english')
 
-class VectorModel(object):
+class VectorModelPlus(object):
 
 	def __init__(self,pathDocs = "/home/katiely/Documents/RiI/TP1_VectorModel/cfc/separate/*.txt"):
 		self.totalOfDocs = 0
@@ -19,6 +23,9 @@ class VectorModel(object):
 		self.norms = {}
 		self.vetorsDocument = {} #Vetores de cada doc
 
+		with open('stopwords.txt', 'r') as file:
+			self.stopWords = set(file.read().split())
+
 		self.parseDocs()
 		self.buildInvList()
 		self.calculateDocumentsVectors()
@@ -28,6 +35,20 @@ class VectorModel(object):
 		txt = txt.strip()
 		txt = txt.strip('\n')
 		return txt
+
+	def hasNumbers(self,word):
+		return any(char.isdigit() for char in word)
+
+	def preProcessamento(self,word):
+
+		if (self.hasNumbers(word) == False):return None
+		
+		word = word.lower()                          
+		word = stemmer.stem(word)
+
+		if (word in self.stopWords == True):return None                      
+		
+		return word
 
 	def parseDocs(self):
 		PATH = self.pathDocs
@@ -44,8 +65,10 @@ class VectorModel(object):
 					txt[i] = self.removerRuido(txt[i])
 
 					for sub_word in txt[i].split():
-						txt_doc.append(sub_word)
-						words.add(sub_word)
+						sub_word = self.preProcessamento(sub_word)
+						if (sub_word != None):
+							txt_doc.append(sub_word)
+							words.add(sub_word)
 
 				docs = txtfile.split('/')[-1]
 				docs = int(docs[1:-4])
@@ -147,6 +170,15 @@ class VectorModel(object):
 
 		return similarity
 
+	def reformularQuery(self,query):
+
+		nova_consulta = ""
+		for sub_word in query.split():
+			sub_word = self.preProcessamento(sub_word)
+			if (sub_word != None):
+				nova_consulta += sub_word + ""
+		return nova_consulta
+
 	def ranking_k(self,query,k=10):
 		print("->Calculando Rank de cada documento..............")
 		if (k > len(self.documents)):
@@ -155,6 +187,7 @@ class VectorModel(object):
 		tuple_documents = []
 		top_k = []
 
+		query = self.reformularQuery(query)
 		vector_query = self.calculateQueryVector(query)
 		norm_query = np.linalg.norm(vector_query)
 

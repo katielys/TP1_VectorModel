@@ -3,6 +3,7 @@ import os
 import sys
 import re
 from models.VectorModel import VectorModel
+from models.VectorModelPlus import VectorModelPlus
 from models.PreProcessing import PreProcessing
 from models.Metrics import Metrics
 from pprint import pprint
@@ -45,11 +46,9 @@ if __name__ == '__main__':
 	print("     Model Vector ")
 	print("--------------------\n\n")
 	
-	aux = VectorModel("cfc/separate/*.txt")
-	aux.parseDocs()
-	aux.buildInvList()
-	aux.calculateDocumentsVectors()
-	aux.calculateNormEachDoc() 
+	# vm = VectorModel("cfc/separate/*.txt")
+	vmp = VectorModelPlus("cfc/separate/*.txt")
+	
 	queries = readQueries(PATH_DOCS)
 
 	for i in range(0,len(queries)):
@@ -57,7 +56,7 @@ if __name__ == '__main__':
 		r_querie = [int(x) for x, y in queries[i][3]]
 		# print("Querie Number: " + queries[i][0])
 		# print("Number Relevants: " + queries[i][2])
-		rank_vetorial = aux.ranking_k(queries[i][1],len(r_querie)) #Vai calcular o top 10 similares -> passa título querie como parametro
+		rank_vetorial = vmp.ranking_k(queries[i][1],4) #Vai calcular o top 10 similares -> passa título querie como parametro
 
 		metrics = Metrics(r_querie,rank_vetorial)
 
