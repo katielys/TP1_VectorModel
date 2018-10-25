@@ -1,6 +1,7 @@
 import os
 import glob
 import numpy as np
+from pprint import pprint
 from collections import Counter
 
 class VectorModel(object):
@@ -9,6 +10,14 @@ class VectorModel(object):
 		self.totalOfDocs = 0
 		self.invIndex = []
 		self.pathDocs = pathDocs
+		self.vocabulary = []
+		self.documents = [] #Lista de dicionarios -> dict = (documento,palavras)
+		self.invIndex = {} # Dict de Dict -> 
+
+	def removerRuido(self,txt):
+		txt = txt.strip()
+		txt = txt.strip('\n')
+		return txt
 
 	def parseDocs(self):
 		PATH = self.pathDocs
@@ -19,10 +28,18 @@ class VectorModel(object):
 			with open(txtfile, 'r') as f:
 				self.totalOfDocs += 1.0
 				txt = f.readlines()
-				words |= set(txt)
+				txt_doc = []
+
+				for i in range(0,len(txt)):
+					txt[i] = self.removerRuido(txt[i])
+
+					for sub_word in txt[i].split():
+						txt_doc.append(sub_word)
+						words.add(sub_word)
+
 				docs = txtfile.split('/')[-1]
 				docs = int(docs[1:-4])
-				texts[docs] = txt
+				texts[docs] = txt_doc
 
 		self.documents = texts
 		self.vocabulary = sorted(list(words)) 
@@ -34,6 +51,7 @@ class VectorModel(object):
 		print("->criando indice....")
 		dictWords = {}
 		for x in self.vocabulary:
+			# print(self.vocabulary)
 			dictWords[x] = dict()
 
 		for txt, wrds in self.documents.items():
@@ -41,7 +59,11 @@ class VectorModel(object):
 			for aWord, aFreq in freq.most_common():
 				dictWords[aWord][txt] = aFreq
 
+
 		self.invIndex = dictWords
+		pprint(dict(self.invIndex))
+		input("\nClique <ENTER> para prosseguir")
+
 		print("->Finalizacao da criacao do indice.....")
 
 	def tf(self, document, word):
@@ -49,6 +71,7 @@ class VectorModel(object):
 			return self.invIndex[word][document]
 		else:
 			return 0.0
+
 	def idf(self, word):
 		N = self.totalOfDocs
 		if (word in self.invIndex):
@@ -58,7 +81,8 @@ class VectorModel(object):
 		if Nt != 0:
 			return np.log(N / Nt)
 		else:
-			return 0.0		
+			return 0.0
+
 	def calculateDocumentsVectors(self):
 		print("->calculando norma documentos")
 		vetors = {}
@@ -73,6 +97,7 @@ class VectorModel(object):
 					vetors[doc][i] = w_d
 		self.vetorsDocument = vetors	
 		print("->acabou calculo da norma docs")		
+
 	def calculateNormEachDoc(self):
 		print("->Calculando norma de cada documento..............")
 		norms = {}
@@ -80,6 +105,7 @@ class VectorModel(object):
 			norms[doc] = np.linalg.norm(self.vetorsDocument[doc])
 		self.norms = norms
 		print("->finalizando calculo..................")
+
 	def calculateQueryVectors(self,query):
 		v_Q = {}
 		v_Q['Q'] = np.zeros(len(self.vocabulary))
