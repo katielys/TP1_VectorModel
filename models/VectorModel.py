@@ -20,9 +20,9 @@ class VectorModel(object):
 		self.invIndex = {} # Dict de Dict -> 
 		self.norms = {}
 		self.vetorsDocument = {} #Vetores de cada doc
-		print("\n\n--------------------")
+		print("\n\n-------------------------------")
 		print("     SIMPLE Model Vector   ")
-		print("--------------------\n\n")
+		print("-------------------------------\n\n")
 		self.parseDocs()
 		self.buildInvList()
 		self.calculateDocumentsVectors()

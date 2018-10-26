@@ -64,8 +64,8 @@ class Metrics(object):
 		except Exception as e:
 			return 0.0
 
-	def dcgk(self , k=10, method=0):
-		r= self.R
+	def dcgk(self ,r, k=10, method=0):
+		r = self.rs(r)
 		r = np.asfarray(r)[:k]
 		if r.size:
 			if method == 0:
@@ -77,18 +77,26 @@ class Metrics(object):
 		return 0.0
 
 
-	def ndcgk(self, k=10, method=0):
-		r= self.R
-		dcg_max = self.dcgk( k, method)
+	def ndcgk(self,r, k=10, method=0):
+		r = self.rs(r)
+		dcg_max =self.dcgk(sorted(r, reverse=True), k, method)
 		if not dcg_max:
 			return 0.
-		return self.dcgk( k, method) / dcg_max
+		return self.dcgk(r, k, method) / dcg_max
 
-	def parroba(self, k=10):
-		r= self.R
+	def parroba(self,r, k=10):
+		r = self.rs(r)
 		assert k >= 1
 		r = np.asarray(r)[:k] != 0
 		if r.size != k:
 			raise ValueError('Relevance score length < k')
 		return np.mean(r)
+	def rs(self, R):
+		res = []
+		for x in R:
+			if x in self.N:
+				res += [1]
+			else:
+				res += [0]
+		return res
 
