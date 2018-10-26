@@ -8,7 +8,7 @@ from models.PreProcessing import PreProcessing
 from models.Metrics import Metrics
 from pprint import pprint
 
-def readQueries(PATH_DOCS = "cfc/cfquery"):
+def readQueries(PATH_DOCS = "/home/katiely/Documents/RiI/TP1_VectorModel/cfc/cfquery"):
 
 	print("lendo arquivo de consultas.....")
 	queries = []
@@ -47,19 +47,29 @@ if __name__ == '__main__':
 	# aux = VectorModel("cfc/separate/*.txt")
 	aux = VectorModel("cfc/separate/*.txt")
 	
-	queries = readQueries()
+	queries = readQueries(PATH_DOCS)
+
+	acc_precisao = 0.0
+	acc_revocacao = 0.0
+	acc_f1 = 0.0
+	acc_MAP = 0.0
 
 	for i in range(0,len(queries)):
 
 		r_querie = [int(x) for x, y in queries[i][3]]
 		# print("Querie Number: " + queries[i][0])
 		# print("Number Relevants: " + queries[i][2])
-		rank_vetorial = aux.ranking_k(queries[i][1],len(r_querie)) #Vai calcular o top 10 similares -> passa título querie como parametro
+		print(queries[i][2])
+		rank_vetorial = vmp.ranking_k(queries[i][1],1) #Vai calcular o top k similares -> passa título querie como parametro int(queries[i][2])
 
+		
 		metrics = Metrics(r_querie,rank_vetorial)
 
+		acc_precisao += metrics.precisao()
 		print("Precisão: " + str(metrics.precisao()))
+		acc_revocacao += metrics.revocacao()
 		print("Revocação: " + str(metrics.revocacao()))
+		acc_f1 += metrics.f1()
 		print("F-Measure: " + str(metrics.f1()))
 		print("NDCG@10 %3.6%" % metrics.ndcgk())
 		#print("p@10 %3.6%" % metrics.parroba())
@@ -74,3 +84,7 @@ if __name__ == '__main__':
 		# pprint(r_querie)
 		# print("\n\n")
 		# input("Clique <ENTER> para prosseguir")
+	print("Media precisao: " + str(acc_precisao/len(queries)))
+	print("Media revocacao: " + str(acc_revocacao/len(queries)))
+	print("Media f-measure: " + str(acc_f1/len(queries)))
+	print("Media MAP: " + str(acc_MAP/len(queries)))

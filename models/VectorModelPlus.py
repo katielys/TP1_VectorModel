@@ -59,7 +59,7 @@ class VectorModelPlus(object):
 
 		word = self.removerAcCE(word)
 		word = word.lower()                          
-		word = stemmer.stem(word)
+		# word = stemmer.stem(word)
 
 		if (word in self.stopWords == True):return None                      
 		
