@@ -71,8 +71,8 @@ if __name__ == '__main__':
 		print("Revocação: " + str(metrics.revocacao()))
 		acc_f1 += metrics.f1()
 		print("F-Measure: " + str(metrics.f1()))
-		print("NDCG@10 %3.6%" % metrics.ndcgk())
-		#print("p@10 %3.6%" % metrics.parroba())
+		print("NDCG@10 "+ str(metrics.ndcgk(metrics.R)))
+		#print("P@10: "+ str( metrics.parroba(metrics.R)))
 		#print("MAP: " + str(metrics.MAP()))
 
 
