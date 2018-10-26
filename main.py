@@ -73,10 +73,7 @@ if __name__ == '__main__':
 
 		acc_precisao += metrics.precisao()
 
-		mP +=metrics.precisao()
-		mR += metrics.revocacao()
-		mFM += metrics.f1()
-		mNDCG10 +=metrics.ndcgk(metrics.R)
+		
 
 		print("Precisão: " + str(metrics.precisao()))
 		acc_revocacao += metrics.revocacao()
