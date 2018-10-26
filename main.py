@@ -42,12 +42,10 @@ if __name__ == '__main__':
 	except Exception as e:
 		pass
 
-	print("\n\n--------------------")
-	print("     Model Vector ")
-	print("--------------------\n\n")
+	
 	
 	# aux = VectorModel("cfc/separate/*.txt")
-	aux = VectorModelPlus("cfc/separate/*.txt")
+	aux = VectorModel("cfc/separate/*.txt")
 	
 	queries = readQueries()
 
@@ -63,7 +61,9 @@ if __name__ == '__main__':
 		print("Precisão: " + str(metrics.precisao()))
 		print("Revocação: " + str(metrics.revocacao()))
 		print("F-Measure: " + str(metrics.f1()))
-		print("MAP: " + str(metrics.MAP()))
+		print("NDCG@10 %3.6%" % metrics.ndcgk())
+		#print("p@10 %3.6%" % metrics.parroba())
+		#print("MAP: " + str(metrics.MAP()))
 
 
 

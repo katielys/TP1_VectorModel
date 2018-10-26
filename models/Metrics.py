@@ -64,3 +64,31 @@ class Metrics(object):
 		except Exception as e:
 			return 0.0
 
+	def dcgk(self , k=10, method=0):
+		r= self.R
+		r = np.asfarray(r)[:k]
+		if r.size:
+			if method == 0:
+				return r[0] + np.sum(r[1:] / np.log2(np.arange(2, r.size + 1)))
+			elif method == 1:
+				return np.sum(r / np.log2(np.arange(2, r.size + 2)))
+			else:
+				raise ValueError('method must be 0 or 1.')
+		return 0.0
+
+
+	def ndcgk(self, k=10, method=0):
+		r= self.R
+		dcg_max = self.dcgk( k, method)
+		if not dcg_max:
+			return 0.
+		return self.dcgk( k, method) / dcg_max
+
+	def parroba(self, k=10):
+		r= self.R
+		assert k >= 1
+		r = np.asarray(r)[:k] != 0
+		if r.size != k:
+			raise ValueError('Relevance score length < k')
+		return np.mean(r)
+
