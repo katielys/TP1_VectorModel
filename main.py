@@ -40,12 +40,16 @@ if __name__ == '__main__':
 	try:
 		PATH_DOCS = sys.argv[1]
 	except Exception as e:
+		print("por favor informe o caminho com o nome do arquivo de busca")
 		pass
+
 
 	
 	
-	aux = VectorModelPlus("cfc/separate/*.txt")
+	#aux = VectorModelPlus("cfc/separate/*.txt")
 	# aux = VectorModel("cfc/separate/*.txt")
+
+	aux = VectorModel("cfc/separate/*.txt")
 	
 	queries = readQueries(PATH_DOCS)
 
@@ -66,7 +70,14 @@ if __name__ == '__main__':
 		
 		metrics = Metrics(r_querie,rank_vetorial)
 
+
 		acc_precisao += metrics.precisao()
+
+		mP +=metrics.precisao()
+		mR += metrics.revocacao()
+		mFM += metrics.f1()
+		mNDCG10 +=metrics.ndcgk(metrics.R)
+
 		print("Precisão: " + str(metrics.precisao()))
 		acc_revocacao += metrics.revocacao()
 		print("Revocação: " + str(metrics.revocacao()))
@@ -77,9 +88,7 @@ if __name__ == '__main__':
 		print("MRR: " + str(metrics.MRR()))
 		#print("P@10: "+ str( metrics.parroba(metrics.R)))
 		#print("MAP: " + str(metrics.MAP()))
-
-
-
+	print("\n\n------MEDIAS -----")
 		# print("Vetorial: ")
 		# pprint(rank_vetorial)
 		# print("\n\n")

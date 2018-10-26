@@ -27,6 +27,9 @@ class VectorModelPlus(object):
 		self.invIndex = {} # Dict de Dict -> 
 		self.norms = {}
 		self.vetorsDocument = {} #Vetores de cada doc
+		print("\n\n-------------------------------")
+		print("     PLUS Model Vector   ")
+		print("-------------------------------\n\n")
 
 		with open('stopwords.txt', 'r') as file:
 			self.stopWords = set(file.read().split())
