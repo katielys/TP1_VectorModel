@@ -44,8 +44,8 @@ if __name__ == '__main__':
 
 	
 	
+	aux = VectorModelPlus("cfc/separate/*.txt")
 	# aux = VectorModel("cfc/separate/*.txt")
-	aux = VectorModel("cfc/separate/*.txt")
 	
 	queries = readQueries(PATH_DOCS)
 
@@ -53,6 +53,7 @@ if __name__ == '__main__':
 	acc_revocacao = 0.0
 	acc_f1 = 0.0
 	acc_MAP = 0.0
+	acc_MRR = 0.0
 
 	for i in range(0,len(queries)):
 
@@ -60,7 +61,7 @@ if __name__ == '__main__':
 		# print("Querie Number: " + queries[i][0])
 		# print("Number Relevants: " + queries[i][2])
 		print(queries[i][2])
-		rank_vetorial = vmp.ranking_k(queries[i][1],1) #Vai calcular o top k similares -> passa título querie como parametro int(queries[i][2])
+		rank_vetorial = aux.ranking_k(queries[i][1],10) #Vai calcular o top k similares -> passa título querie como parametro int(queries[i][2])
 
 		
 		metrics = Metrics(r_querie,rank_vetorial)
@@ -72,6 +73,8 @@ if __name__ == '__main__':
 		acc_f1 += metrics.f1()
 		print("F-Measure: " + str(metrics.f1()))
 		print("NDCG@10 "+ str(metrics.ndcgk(metrics.R)))
+		acc_MRR += metrics.MRR()
+		print("MRR: " + str(metrics.MRR()))
 		#print("P@10: "+ str( metrics.parroba(metrics.R)))
 		#print("MAP: " + str(metrics.MAP()))
 
@@ -87,4 +90,5 @@ if __name__ == '__main__':
 	print("Media precisao: " + str(acc_precisao/len(queries)))
 	print("Media revocacao: " + str(acc_revocacao/len(queries)))
 	print("Media f-measure: " + str(acc_f1/len(queries)))
+	print("Media MRR: " + str(acc_MRR/len(queries)))
 	print("Media MAP: " + str(acc_MAP/len(queries)))

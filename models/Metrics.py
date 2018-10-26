@@ -100,3 +100,10 @@ class Metrics(object):
 				res += [0]
 		return res
 
+	def MRR(self):
+
+		for i in range(0,len(self.R)):
+			if(self.R[i] in self.N):
+				return 1/(i+1)
+		return 0.0
+
